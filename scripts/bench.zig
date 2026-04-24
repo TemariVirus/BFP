@@ -507,7 +507,7 @@ fn bench(
         \\ {0s}
         \\{1s}
         \\
-    , .{ name, "=" ** (name.len + 2) });
+    , .{ name, @as([name.len + 2]u8, @splat('=')) });
 
     var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
     defer _ = debug_allocator.deinit();

@@ -17,4 +17,4 @@ jobs:
 
       - name: Run Tests
         run: |
-          zig build test -Drun_slow_tests
+          zig build test

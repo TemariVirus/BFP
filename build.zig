@@ -1,7 +1,5 @@
 const std = @import("std");
 
-var test_options_mod: *std.Build.Module = undefined;
-
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -12,37 +10,10 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
 
-    const test_options = b.addOptions();
-    test_options.addOption([32]u8, "test_seed", try getTestSeed(b));
-    test_options.addOption(bool, "run_slow_tests", b.option(
-        bool,
-        "run_slow_tests",
-        "Whether to run slow tests.",
-    ) orelse false);
-    test_options_mod = test_options.createModule();
-
     testStep(b, target, optimize);
-    testCrossStep(b, optimize);
+    testCrossStep(b);
     benchStep(b, target);
     generateListsStep(b, optimize);
-}
-
-fn getTestSeed(b: *std.Build) ![32]u8 {
-    var seed = [_]u8{0} ** 32;
-    const is_root = b.pkg_hash.len == 0;
-    if (!is_root) return seed;
-
-    const seed_hex = b.option(
-        []const u8,
-        "test_seed",
-        "Seed to use for random tests. Defaults to the current commit hash",
-    ) orelse b.run(&.{ "git", "rev-parse", "--verify", "HEAD" });
-    if (seed_hex.len < 40) {
-        return error.SeedTooShort;
-    }
-
-    _ = try std.fmt.hexToBytes(&seed, seed_hex[0..40]);
-    return seed;
 }
 
 fn testStep(
@@ -50,12 +21,14 @@ fn testStep(
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
 ) void {
+    b.enable_qemu = true;
+    b.enable_wasmtime = true;
+
     const unit_tests = b.addTest(.{
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/root.zig"),
             .target = target,
             .optimize = optimize,
-            .imports = &.{.{ .name = "options", .module = test_options_mod }},
         }),
     });
     const run_unit_tests = b.addRunArtifact(unit_tests);
@@ -63,7 +36,7 @@ fn testStep(
     test_step.dependOn(&run_unit_tests.step);
 }
 
-fn testCrossStep(b: *std.Build, optimize: std.builtin.OptimizeMode) void {
+fn testCrossStep(b: *std.Build) void {
     b.enable_qemu = true;
     b.enable_wasmtime = true;
 
@@ -113,8 +86,7 @@ fn testCrossStep(b: *std.Build, optimize: std.builtin.OptimizeMode) void {
             .root_module = b.createModule(.{
                 .root_source_file = b.path("src/root.zig"),
                 .target = target,
-                .optimize = if (is_compile_slow) .ReleaseSafe else optimize,
-                .imports = &.{.{ .name = "options", .module = test_options_mod }},
+                .optimize = if (is_compile_slow) .ReleaseSafe else .Debug,
             }),
         });
         const run_unit_tests = b.addRunArtifact(unit_tests);
@@ -125,7 +97,7 @@ fn testCrossStep(b: *std.Build, optimize: std.builtin.OptimizeMode) void {
             .root_module = b.createModule(.{
                 .root_source_file = b.path("scripts/test_lists.zig"),
                 .target = target,
-                .optimize = if (is_compile_slow) .ReleaseSafe else optimize,
+                .optimize = if (is_compile_slow) .ReleaseSafe else .Debug,
                 .imports = &.{.{ .name = "BFP", .module = b.modules.get("BFP").? }},
             }),
         });
