@@ -169,24 +169,24 @@ const BigFloat = @import("BFP").BigFloat;
 // ======
 //  Log2
 // ======
-// f32                 122.526MFLOP/s |  1.050x
-// f64                 128.674MFLOP/s |  1.000x
-// f128                 83.315MFLOP/s |  1.544x
-// BigFloat(f32, i32)   76.889MFLOP/s |  1.674x
-// BigFloat(f32, i96)   68.379MFLOP/s |  1.882x
-// BigFloat(f64, i64)   88.827MFLOP/s |  1.449x
-// BigFloat(f64, i128)  75.375MFLOP/s |  1.707x
+// f32                   0.161GFLOP/s |  1.000x
+// f64                   0.145GFLOP/s |  1.110x
+// f128                 76.906MFLOP/s |  2.092x
+// BigFloat(f32, i32)   74.886MFLOP/s |  2.149x
+// BigFloat(f32, i96)   61.844MFLOP/s |  2.602x
+// BigFloat(f64, i64)   82.915MFLOP/s |  1.941x
+// BigFloat(f64, i128)  66.644MFLOP/s |  2.414x
 
 // f64
-//   Thread time:  8.11ns
-//   Cycles:       35.7  | 7.77ns
-//   Instructions: 25.9
-//   Branches:     6.21  | 13.12% miss
+//   Thread time:  7.36ns
+//   Cycles:       31.7  | 6.90ns
+//   Instructions: 45.5
+//   Branches:     5.00  | 10.00% miss
 // BigFloat(f64, i64)
-//   Thread time:  11.7ns
-//   Cycles:       51.8  | 11.3ns
-//   Instructions: 60.4
-//   Branches:     13.59 | 8.62% miss
+//   Thread time:  12.8ns
+//   Cycles:       55.5  | 12.1ns
+//   Instructions: 82.5
+//   Branches:     11.00 | 4.62% miss
 
 // ==================
 //  FormatScientific
@@ -249,7 +249,7 @@ pub fn main(init: std.process.Init) !void {
     bench("Power", runPow, 2, init.io, stdout, cpu_info) catch {};
     bench("Integer Power", runPowi, 1, init.io, stdout, cpu_info) catch {};
     bench("Exp2", runExp2, 1, init.io, stdout, cpu_info) catch {};
-    bench("Log2", runExp2, 1, init.io, stdout, cpu_info) catch {};
+    bench("Log2", runLog2, 1, init.io, stdout, cpu_info) catch {};
     bench("FormatScientific", runFmt, 1, init.io, stdout, cpu_info) catch {};
     bench("ParseScientific", runParse, 1, init.io, stdout, cpu_info) catch {};
 }
