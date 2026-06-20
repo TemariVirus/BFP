@@ -49,12 +49,12 @@ test "normalize" {
             F.normalize(.{ .significand = math.floatTrueMin(S), .exponent = 0 }),
         );
 
-        try testing.expectEqual(F{
+        try utils.expectBitwiseEqual(F{
             .significand = 0,
             .exponent = 0,
         }, F.normalize(.{ .significand = 0, .exponent = 0 }));
-        try testing.expectEqual(F{
-            .significand = 0,
+        try utils.expectBitwiseEqual(F{
+            .significand = -0.0,
             .exponent = 0,
         }, F.normalize(.{ .significand = -0.0, .exponent = 0 }));
         try testing.expectEqual(F{

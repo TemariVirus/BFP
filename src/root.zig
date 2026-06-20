@@ -620,7 +620,6 @@ pub fn BigFloat(comptime float_options: Options) type {
 
         /// Normalizes the significand and exponent of `x` so that the significand is in the
         /// interval `[1, 2)`, or returns one of the special cases for zero, infinity, or NaN.
-        /// `-0` is normalized to `0`.
         ///
         /// `normalize` must be called after modifying the significand or exponent of `x` directly.
         pub fn normalize(x: Self) Self {
