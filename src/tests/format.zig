@@ -508,3 +508,13 @@ test "formatHex" {
         .{Big.min_value.neg()},
     );
 }
+
+// Failed cases from fuzzer
+test "format fuzz" {
+    const BF16 = BigFloat(.{ .Significand = f16, .Exponent = i128 });
+    try testing.expectFmt(
+        "2.134e-31120238684812306949365838700533485735",
+        "{e}",
+        .{BF16{ .significand = 1.042, .exponent = -103379195206678541637689605389987816880 }},
+    );
+}

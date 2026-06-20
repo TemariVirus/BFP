@@ -101,9 +101,11 @@ pub fn Render(S: type, _E: type, comptime bake_logs: bool) type {
             }
         };
 
+        const log_guard_bits = 6;
+
         const log2_3_bits: comptime_int = blk: {
             const bits: comptime_int = @typeInfo(E).int.bits;
-            const log_bits: comptime_int = 2 * bits + 6;
+            const log_bits: comptime_int = 2 * bits + log_guard_bits;
             // Used in negLog10_075
             break :blk log_bits + negLog10_075GuardBits(log_bits) + 2;
         };
@@ -126,7 +128,7 @@ pub fn Render(S: type, _E: type, comptime bake_logs: bool) type {
 
         const log2_10_bits: comptime_int = blk: {
             const bits: comptime_int = @typeInfo(E).int.bits;
-            const log_bits: comptime_int = 2 * bits + 6;
+            const log_bits: comptime_int = 2 * bits + log_guard_bits;
             // Used in negLog10_075
             const a = log_bits + negLog10_075GuardBits(log_bits);
             // Used in pow10
@@ -200,7 +202,7 @@ pub fn Render(S: type, _E: type, comptime bake_logs: bool) type {
         fn computeK(q: E, lower_boundary_is_closer: bool) E {
             const bits: comptime_int = @typeInfo(E).int.bits;
             comptime assert(@typeInfo(E).int.signedness == .signed);
-            const p: comptime_int = 3 * bits + 6;
+            const p: comptime_int = 3 * bits + log_guard_bits;
             const P = int_math.TryInt(.signed, p) orelse @compileError("Too many bits");
             const log_bits = p - bits;
 
@@ -216,7 +218,7 @@ pub fn Render(S: type, _E: type, comptime bake_logs: bool) type {
         fn floorLog2Pow10(e: E) E {
             const bits: comptime_int = @typeInfo(E).int.bits;
             comptime assert(@typeInfo(E).int.signedness == .signed);
-            const p = 3 * bits + 6;
+            const p = 3 * bits + log_guard_bits;
             const P = int_math.TryInt(.signed, p) orelse @compileError("Too many bits");
 
             const @"log2(10)": P = log2_10(p - bits);
@@ -280,7 +282,7 @@ pub fn Render(S: type, _E: type, comptime bake_logs: bool) type {
             assert(1 <= h and h <= 4);
 
             // Convert cb and friends to decimal
-            const scale = int_math.pow10(Cx2, math.floatFractionalBits(S) + 1, -k);
+            const scale = int_math.pow10(Cx2, math.floatFractionalBits(S) + 2, -k);
             const vb_l = mulHighRoundToOdd(scale, cb_l << h);
             const vb = mulHighRoundToOdd(scale, cb << h);
             const vb_r = mulHighRoundToOdd(scale, cb_r << h);
