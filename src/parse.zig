@@ -365,7 +365,7 @@ pub fn parseBase10(
     assert(m2 >> (@typeInfo(Cx2).int.bits - 1) == 1);
 
     var e2 = blk: {
-        const guard_bits = 16;
+        const guard_bits = 26;
         const Ex3 = int_math.TryInt(
             .signed,
             @max(32, 2 * @typeInfo(E).int.bits + guard_bits + 1),

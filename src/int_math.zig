@@ -106,7 +106,6 @@ pub fn sqrt(T: type, n: T) T {
         if (x == next_x) return next_x;
         x = next_x;
     }
-    return x;
 }
 
 /// Returns `2^(n * 2^-b)) * 2^(b - 1)`, where `b` is the number of bits in `T`.

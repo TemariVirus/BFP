@@ -212,6 +212,31 @@ test "parse decimal" {
     }
 }
 
+// Failed cases from fuzzer
+test "parse decimal fuzz" {
+    const BF32 = BigFloat(.{ .Significand = f32, .Exponent = i128 });
+    try testing.expectEqual(
+        -41999781497045633317315380311157951373,
+        (try BF32.parse("1.0693013e-12643194041943804629407517803902603710")).exponent,
+    );
+
+    const BF64 = BigFloat(.{ .Significand = f64, .Exponent = i128 });
+    try testing.expectEqual(
+        169457330695573499036228701731869445796,
+        (try BF64.parse("3.4571953819264144e51011739524518317909985126567442417081")).exponent,
+    );
+}
+
+test "parse decimal fuzz failing" {
+    return error.SkipZigTest;
+
+    // const BF16 = BigFloat(.{ .Significand = f16, .Exponent = i128 });
+    // try testing.expectEqual(
+    //     64860025656353236083789072948066756057,
+    //     (try BF16.parse("3.72e19524813242097723733436035443233760677")).exponent,
+    // );
+}
+
 test "parse decimal rounding" {
     inline for (utils.bigFloatTypes(&.{f32}, &.{ i23, i32 })) |F| {
         try testing.expectEqual(
