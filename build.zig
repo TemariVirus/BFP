@@ -19,7 +19,7 @@ pub fn build(b: *std.Build) !void {
 fn testStep(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
-    optimize: std.builtin.OptimizeMode,
+    optimize: std.lang.OptimizeMode,
 ) void {
     b.enable_qemu = true;
     b.enable_wasmtime = true;
@@ -128,7 +128,7 @@ fn benchStep(b: *std.Build, target: std.Build.ResolvedTarget) void {
     }
 }
 
-fn generateListsStep(b: *std.Build, optimize: std.builtin.OptimizeMode) void {
+fn generateListsStep(b: *std.Build, optimize: std.lang.OptimizeMode) void {
     const gen_lists_exe = b.addExecutable(.{
         .name = "generate_lists",
         .root_module = b.createModule(.{

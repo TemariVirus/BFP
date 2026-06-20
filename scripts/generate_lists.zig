@@ -57,10 +57,10 @@ pub fn main(init: std.process.Init) !void {
         BigFloat(.{ .Significand = f64, .Exponent = i64 }),
         BigFloat(.{ .Significand = f128, .Exponent = i64 }),
     }) |BF| {
-        inline for (@typeInfo(TestOp).@"enum".fields) |op| {
+        inline for (@typeInfo(TestOp).@"enum".field_values) |op| {
             wait_grp.async(
                 io,
-                generateTask(BF, @enumFromInt(op.value)),
+                generateTask(BF, @enumFromInt(op)),
                 .{ io, init.gpa, dir },
             );
         }

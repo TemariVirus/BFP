@@ -2,7 +2,7 @@ const std = @import("std");
 const assert = std.debug.assert;
 const math = std.math;
 
-pub fn TryInt(comptime signedness: std.builtin.Signedness, bits: comptime_int) ?type {
+pub fn TryInt(comptime signedness: std.lang.Signedness, bits: comptime_int) ?type {
     if (bits > math.maxInt(u16)) return null;
     return @Int(signedness, bits);
 }

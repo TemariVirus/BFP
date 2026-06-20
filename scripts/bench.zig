@@ -525,7 +525,7 @@ fn bench(
     var iter_counts: [types.len]u64 = undefined;
     var results: [types.len]Bench.Result = undefined;
 
-    const InputSlice = @typeInfo(@TypeOf(run)).@"fn".params[1].type;
+    const InputSlice = @typeInfo(@TypeOf(run)).@"fn".param_types[1];
     inline for (types, 0..) |T, i| {
         const InputT = if (InputSlice) |IS| @typeInfo(IS).pointer.child else T;
         const alloc, const free = getAllocFree(InputT);
