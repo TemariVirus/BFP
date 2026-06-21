@@ -293,17 +293,16 @@ pub fn BigFloat(comptime float_options: Options) type {
             };
         }
 
-        /// Returns the decimal scientific representation of `self`.
+        /// Returns the decimal scientific representation of `self`, ignoring sign.
         /// The result is not normalized, i.e., the digits may have trailing zeros.
-        ///
         /// The result is not guaranteed to always be rounded correctly (although it almost always is).
+        ///
+        /// Asserts that `self` is finite.
         pub fn toDecimal(self: Self) Decimal {
             assert(self.isFinite());
 
             if (self.significand == 0) return .{ .digits = 0, .exponent = 0 };
-            assert(1 <= self.significand and self.significand < 2);
-
-            return Render.toDecimal(self.significand, self.exponent);
+            return Render.toDecimal(@abs(self.significand), self.exponent);
         }
 
         /// Returns the maximum buffer size required to format a `BigFloat` with the given options.
