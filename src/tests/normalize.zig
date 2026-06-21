@@ -2,6 +2,7 @@ const std = @import("std");
 const math = std.math;
 const testing = std.testing;
 
+const BigFloat = @import("../root.zig").BigFloat;
 const utils = @import("../test_utils.zig");
 
 test "normalize" {
@@ -65,4 +66,16 @@ test "normalize" {
             F.normalize(.{ .significand = math.nan(S), .exponent = 0 }).significand,
         ));
     }
+}
+
+// Failed cases from fuzzer
+test "normalize fuzz" {
+    const BF = BigFloat(.{ .Significand = f80, .Exponent = i23 });
+    try testing.expectEqual(BF{
+        .significand = -1.37979654136095563287,
+        .exponent = 1253368,
+    }, BF.normalize(.{
+        .significand = @bitCast(@as(u80, 0x8000b09d2c4e23bd57ae)),
+        .exponent = 1269750,
+    }));
 }
