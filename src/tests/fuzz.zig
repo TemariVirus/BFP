@@ -273,30 +273,9 @@ fn ParseContext(BF: type) type {
             return error.UnexpectedTestResult;
         }
 
-        /// Returns a random float evenly distributed in the range [1, 2) or (-2, -1].
-        fn randomFloat(F: type, s: *testing.Smith) F {
-            const C = @Int(.unsigned, @typeInfo(F).float.bits);
-
-            // Mantissa
-            var repr: C = s.value(@Int(.unsigned, math.floatMantissaBits(F)));
-            // Explicit bit is always 1
-            if (math.floatMantissaBits(F) != math.floatFractionalBits(F)) {
-                repr |= @as(C, 1) << math.floatFractionalBits(F);
-            }
-            // Exponent is always 0
-            repr |= math.floatExponentMax(F) << math.floatMantissaBits(F);
-            // Sign
-            repr |= @as(C, s.value(u1)) << (@typeInfo(F).float.bits - 1);
-
-            return @bitCast(repr);
-        }
-
         fn testOne(_: @This(), s: *testing.Smith) !void {
-            const expected = BF{
-                .significand = randomFloat(@FieldType(BF, "significand"), s),
-                .exponent = s.value(@FieldType(BF, "exponent")),
-            };
-            var buf: [128]u8 = undefined;
+            const expected = s.value(BF).normalize();
+            var buf: [256]u8 = undefined;
             var w: std.Io.Writer = .fixed(&buf);
             try w.print("{e}", .{expected});
             const actual: BF = try .parse(w.buffered());
